@@ -26,26 +26,41 @@ int main(void) {
     // 2. Grab Packets & Print Information
     int grabbed = 0;
     while(TRUE) {
+        struct pcap_pkthdr *header;
         struct sniff_ethernet *ethernet;
         struct sniff_ip *ip;
-        struct pcap_pkthdr *header;
+        struct sniff_tcp *tcp;
         const u_char* data;
         int res = pcap_next_ex(handle, &header, &data);
+        if(res != 1) continue;
+
+        grabbed += 1;
+        printf("\n\n[Packet #%d]", grabbed);
         
-        printf("\n\n[Packet #%d]\n", grabbed);
-        puts("------------------------------------------------------");
-        
+        div_line();
+
         // Ethernet Header
         ethernet = (struct sniff_ethernet*)(data);
         print_ether_hdr(ethernet);
         
-        if(!check_IP(ethernet)) break;
+        // IP Header
+        if(!check_IP(ethernet)) {
+            div_line();
+            continue;
+        }
         else ip = (struct sniff_ip*)(data + SIZE_ETHERNET);
         print_ip_hdr(ip);
         
-        puts("\n------------------------------------------------------");
-        
-        grabbed += 1;
+        // TCP Header
+        const int SIZE_IP = ((ip->ipv_hl & 0x0f) << 2);
+        if(!check_TCP(ip)) {
+            div_line();
+            continue;
+        }
+        else tcp = (struct sniff_tcp*)(data + SIZE_ETHERNET + SIZE_IP);
+        print_tcp_hdr(tcp);
+
+        div_line();
     }
     
     return 0;

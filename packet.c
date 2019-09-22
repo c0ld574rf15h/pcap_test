@@ -43,6 +43,20 @@ void print_ip_hdr(struct sniff_ip* hdr) {
     print_addr(hdr->ip_dst, IP_ADDR_LEN, "%d", '.', '\n');
 }
 
+void print_tcp_hdr(struct sniff_tcp* hdr) {
+    printf("\n[ TCP Header Scan ]\n");
+    printf("[*] Source Port : %d\n", my_ntohs(hdr->tcp_sport));
+    printf("[*] Destination Port : %d\n", my_ntohs(hdr->tcp_dport));
+}
+
 int check_IP(struct sniff_ethernet* hdr) {
-    return my_ntohs(hdr->ether_type) == 0x0800;
+    return my_ntohs(hdr->ether_type) == 0x0800; // IPv4
+}
+
+int check_TCP(struct sniff_ip* hdr) {
+    return hdr->ip_ptcl == 0x06;
+}
+
+void div_line(void) {
+    puts("\n------------------------------------------------------");
 }
