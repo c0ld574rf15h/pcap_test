@@ -27,17 +27,24 @@ int main(void) {
     int grabbed = 0;
     while(TRUE) {
         struct sniff_ethernet *ethernet;
+        struct sniff_ip *ip;
         struct pcap_pkthdr *header;
         const u_char* data;
         int res = pcap_next_ex(handle, &header, &data);
-
-        printf("\n[Packet #%d]\n", grabbed);
+        
+        printf("\n\n[Packet #%d]\n", grabbed);
         puts("------------------------------------------------------");
+        
         // Ethernet Header
         ethernet = (struct sniff_ethernet*)(data);
         print_ether_hdr(ethernet);
-        puts("------------------------------------------------------");
-
+        
+        if(!check_IP(ethernet)) break;
+        else ip = (struct sniff_ip*)(data + SIZE_ETHERNET);
+        print_ip_hdr(ip);
+        
+        puts("\n------------------------------------------------------");
+        
         grabbed += 1;
     }
     
