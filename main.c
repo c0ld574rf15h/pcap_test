@@ -37,7 +37,7 @@ int main(void) {
         grabbed += 1;
         printf("\n\n[Packet #%d]", grabbed);
         
-        div_line();
+        div_line(); // -----------------------------------------------------
 
         // Ethernet Header
         ethernet = (struct sniff_ethernet*)(data);
@@ -60,8 +60,14 @@ int main(void) {
         else tcp = (struct sniff_tcp*)(data + SIZE_ETHERNET + SIZE_IP);
         print_tcp_hdr(tcp);
 
-        div_line();
+        // Payload
+        const int payload_sz = my_ntohs(ip->ip_len) - (SIZE_IP + SIZE_TCP);
+        const u_char *payload = (u_char*)(data + SIZE_ETHERNET + SIZE_IP + SIZE_TCP);
+        print_payload(payload, payload_sz);
+
+        div_line(); // -----------------------------------------------------
     }
     
+    pcap_close(handle);
     return 0;
 }

@@ -5,6 +5,7 @@
 #define IP_ADDR_LEN     4
 
 #define SIZE_ETHERNET   14
+#define SIZE_TCP        20
 
 // Network header structures
 struct sniff_ethernet {
@@ -51,6 +52,7 @@ void handle_pcap_next(int res, struct pcap_pkthdr *hdr);
 void print_ether_hdr(struct sniff_ethernet* hdr);
 void print_ip_hdr(struct sniff_ip* hdr);
 void print_tcp_hdr(struct sniff_tcp* hdr);
+void print_payload(const u_char *payload, int sz);
 void div_line(void);
 
 // Functions for checking protocol

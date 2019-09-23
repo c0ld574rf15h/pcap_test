@@ -5,7 +5,6 @@ u_short my_ntohs(u_short stream) {
     return (stream << 8) | (stream >> 8);
 }
 
-
 void print_addr(u_char *payload, int length, const char *fmt, char div, char end) {
     for(int i=0;i<length;++i) {
         printf(fmt, payload[i]);
@@ -47,6 +46,15 @@ void print_tcp_hdr(struct sniff_tcp* hdr) {
     printf("\n[ TCP Header Scan ]\n");
     printf("[*] Source Port : %d\n", my_ntohs(hdr->tcp_sport));
     printf("[*] Destination Port : %d\n", my_ntohs(hdr->tcp_dport));
+}
+
+void print_payload(const u_char *payload, int sz) {
+    if(sz == 0) return;
+    printf("\n[ Payload ]\n");
+    for(int i=0;i<(sz < 32 ? sz : 32);++i) {
+        printf("%02X ", payload[i]);
+        if((i%16)==15) fputc('\n', stdout);
+    } if(sz<32 && sz%16!=0) fputc('\n', stdout);
 }
 
 int check_IP(struct sniff_ethernet* hdr) {
